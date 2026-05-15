@@ -7,143 +7,115 @@
 <title>Spin the Wheel</title>
 
 <style>
-  body {
-    font-family: Arial;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+body {
+  font-family: Arial;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: url("background.png") no-repeat center center fixed;
+  background-size: cover;
+  color: white;
+}
 
-    background: url("background.png") no-repeat center center fixed;
-    background-size: cover;
-    color: white;
-  }
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 0;
+}
 
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 0;
-  }
+/* ✅ LOGO FIXED */
+.logo {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 420px; /* litt mindre enn 560 for bedre balanse */
+  z-index: 1000;
+}
 
-  /* LOGO */
-  .logo {
-    position: fixed;
-    top: 30px;
-    left: 30px;
-    width: 560px;
-    z-index: 1000;
-  }
+.layout {
+  display: flex;
+  align-items: center;
+  gap: 60px;
+  z-index: 1;
+}
+
+/* TEXT */
+.left-text {
+  text-align: center;
+}
+
+.line1 { font-size: 40px; }
+.line2 { font-size: 64px; }
+.line3 { font-size: 58px; color: #ff0066; }
+
+/* WHEEL */
+.wheel-container {
+  position: relative;
+  width: 900px;
+}
+
+/* ✅ POINTER FIXED ON TOP */
+.pointer {
+  width: 0;
+  height: 0;
+  border-left: 35px solid transparent;
+  border-right: 35px solid transparent;
+  border-top: 70px solid white;
+
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+/* BUTTON */
+button {
+  margin-top: 30px;
+  padding: 20px 40px;
+  font-size: 24px;
+  background: #ff0066;
+  color: white;
+  border: none;
+  border-radius: 8px;
+}
+
+/* ✅ MOBILE FIX */
+@media (max-width: 900px) {
 
   .layout {
-    display: flex;
-    align-items: center;
-    gap: 80px;
-    z-index: 1;
+    flex-direction: column;
+    gap: 20px;
+    padding-top: 80px;
   }
 
-  /* TEXT */
-  .left-text {
-    max-width: 500px;
-    text-align: center;
+  .logo {
+    width: 180px;
   }
 
-  .line1 {
-    font-size: 40px;
-  }
+  .line1 { font-size: 24px; }
+  .line2 { font-size: 36px; }
+  .line3 { font-size: 32px; }
 
-  .line2 {
-    font-size: 64px;
-  }
-
-  .line3 {
-    font-size: 58px;
-    color: #ff0066;
-  }
-
-  /* WHEEL */
   .wheel-container {
-    position: relative;
-    width: 900px;
-  }
-
-  canvas {
-    border-radius: 50%;
-    background: white;
+    width: 340px;
   }
 
   .pointer {
-    width: 0;
-    height: 0;
-    border-left: 35px solid transparent;
-    border-right: 35px solid transparent;
-    border-top: 70px solid white;
-
-    position: absolute;
-    top: -25px;
-    left: 50%;
-    transform: translateX(-50%);
+    border-left: 18px solid transparent;
+    border-right: 18px solid transparent;
+    border-top: 35px solid white;
+    top: -10px;
   }
 
   button {
-    margin-top: 30px;
-    padding: 20px 40px;
-    font-size: 22px;
-    background: #ff0066;
-    color: white;
-    border: none;
-    border-radius: 8px;
+    width: 70%;
   }
-
-  /* ✅ MOBILE VERSION */
-  @media (max-width: 900px) {
-
-    .layout {
-      flex-direction: column; /* stack */
-      gap: 20px;
-    }
-
-    .logo {
-      width: 180px;  /* smaller logo */
-      top: 10px;
-      left: 10px;
-    }
-
-    .line1 {
-      font-size: 26px;
-    }
-
-    .line2 {
-      font-size: 36px;
-    }
-
-    .line3 {
-      font-size: 32px;
-    }
-
-    .wheel-container {
-      width: 340px;
-    }
-
-    canvas {
-      width: 340px;
-      height: 340px;
-    }
-
-    .pointer {
-      border-left: 18px solid transparent;
-      border-right: 18px solid transparent;
-      border-top: 35px solid white;
-      top: -10px;
-    }
-
-    button {
-      width: 80%;
-      font-size: 20px;
-    }
-  }
+}
 </style>
 </head>
 
@@ -162,7 +134,7 @@
   <div>
     <div class="wheel-container">
       <div class="pointer"></div>
-      <canvas id="wheel" width="900" height="900"></canvas>
+      <canvas id="wheel"></canvas>
     </div>
 
     <div style="text-align:center;">
@@ -173,53 +145,85 @@
 </div>
 
 <script>
-// same wheel JS (unchanged)
+
 const options = [
   "Shopping bag","Try again","Running belt",
-  "Shopping bag","Glass jar","Almost there – try again",
+  "Shopping bag","Glass jar","Almost there",
   "Shopping bag","Running belt","One more try",
-  "Shopping bag","Glass jar","Running belt",
-  "Shopping bag"
+  "Shopping bag","Glass jar","Running belt","Shopping bag"
+];
+
+const baseColors = [
+  ["#5a82a6", "#3e5f7d"],
+  ["#7b5c99", "#5a4373"],
+  ["#5aa6b8", "#3d7480"],
+  ["#b34a7a", "#7f3355"]
 ];
 
 let currentAngle = 0;
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
 
-function drawWheel() {
-  const size = canvas.width;
+/* ✅ RESPONSIVE DRAW */
+function resizeAndDraw() {
+
+  const size = canvas.parentElement.offsetWidth;
+
+  canvas.width = size;
+  canvas.height = size;
+
   const center = size / 2;
   const radius = size / 2;
   const arc = 2 * Math.PI / options.length;
+
+  ctx.clearRect(0,0,size,size);
 
   options.forEach((opt, i) => {
     const start = i * arc;
     const end = start + arc;
 
+    const colorSet = baseColors[i % 4];
+    const grad = ctx.createLinearGradient(0, 0, 0, size);
+    grad.addColorStop(0, colorSet[0]);
+    grad.addColorStop(1, colorSet[1]);
+
     ctx.beginPath();
     ctx.moveTo(center, center);
     ctx.arc(center, center, radius, start, end);
-    ctx.fillStyle = i % 2 ? "#5a82a6" : "#7b5c99";
+    ctx.fillStyle = grad;
     ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,0.4)";
+    ctx.stroke();
 
     ctx.save();
     ctx.translate(center, center);
     ctx.rotate(start + arc / 2);
+
     ctx.fillStyle = "white";
-    ctx.font = "bold 16px Arial";
-    ctx.fillText(opt, radius - 100, 0);
+    
+    /* ✅ TEXT SCALES PROPERLY */
+    ctx.font = `bold ${size * 0.04}px Arial`;
+    ctx.textAlign = "center";
+
+    ctx.fillText(opt, radius - (size * 0.25), 0);
+
     ctx.restore();
   });
 }
 
+window.addEventListener("resize", resizeAndDraw);
+
 function spin() {
   const spin = Math.random() * 360 + 720;
   currentAngle += spin;
+
   canvas.style.transition = "transform 4s ease-out";
   canvas.style.transform = `rotate(${currentAngle}deg)`;
 }
 
-drawWheel();
+/* INIT */
+resizeAndDraw();
+
 </script>
 
 </body>
