@@ -27,15 +27,16 @@ body::before {
   z-index: 0;
 }
 
-/* ✅ LOGO FIXED */
+/* LOGO */
 .logo {
   position: fixed;
   top: 20px;
   left: 20px;
-  width: 420px; /* litt mindre enn 560 for bedre balanse */
+  width: 420px;
   z-index: 1000;
 }
 
+/* LAYOUT */
 .layout {
   display: flex;
   align-items: center;
@@ -58,7 +59,7 @@ body::before {
   width: 900px;
 }
 
-/* ✅ POINTER FIXED ON TOP */
+/* POINTER */
 .pointer {
   width: 0;
   height: 0;
@@ -82,9 +83,10 @@ button {
   color: white;
   border: none;
   border-radius: 8px;
+  cursor: pointer;
 }
 
-/* ✅ MOBILE FIX */
+/* MOBILE */
 @media (max-width: 900px) {
 
   .layout {
@@ -161,10 +163,12 @@ const baseColors = [
 ];
 
 let currentAngle = 0;
+let isSpinning = false;
+
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
 
-/* ✅ RESPONSIVE DRAW */
+/* RESPONSIVE DRAW */
 function resizeAndDraw() {
 
   const size = canvas.parentElement.offsetWidth;
@@ -183,6 +187,7 @@ function resizeAndDraw() {
     const end = start + arc;
 
     const colorSet = baseColors[i % 4];
+
     const grad = ctx.createLinearGradient(0, 0, 0, size);
     grad.addColorStop(0, colorSet[0]);
     grad.addColorStop(1, colorSet[1]);
@@ -192,6 +197,7 @@ function resizeAndDraw() {
     ctx.arc(center, center, radius, start, end);
     ctx.fillStyle = grad;
     ctx.fill();
+
     ctx.strokeStyle = "rgba(255,255,255,0.4)";
     ctx.stroke();
 
@@ -200,12 +206,10 @@ function resizeAndDraw() {
     ctx.rotate(start + arc / 2);
 
     ctx.fillStyle = "white";
-    
-    /* ✅ TEXT SCALES PROPERLY */
-    ctx.font = `bold ${size * 0.04}px Arial`;
+    ctx.font = `bold ${size * 0.045}px Arial`;
     ctx.textAlign = "center";
 
-    ctx.fillText(opt, radius - (size * 0.25), 0);
+    ctx.fillText(opt, radius - (size * 0.28), 0);
 
     ctx.restore();
   });
@@ -213,12 +217,31 @@ function resizeAndDraw() {
 
 window.addEventListener("resize", resizeAndDraw);
 
+/* ✅ FIXED SPIN FUNCTION */
 function spin() {
+
+  if (isSpinning) return;
+
+  isSpinning = true;
+
+  // reset animation
+  canvas.style.transition = "none";
+  canvas.style.transform = `rotate(${currentAngle}deg)`;
+
+  // force reflow
+  canvas.offsetHeight;
+
+  // new spin
   const spin = Math.random() * 360 + 720;
   currentAngle += spin;
 
-  canvas.style.transition = "transform 4s ease-out";
+  canvas.style.transition = "transform 4s cubic-bezier(0.33, 1, 0.68, 1)";
   canvas.style.transform = `rotate(${currentAngle}deg)`;
+
+  // unlock after animation
+  setTimeout(() => {
+    isSpinning = false;
+  }, 4000);
 }
 
 /* INIT */
