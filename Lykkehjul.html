@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Spin the Wheel</title>
+
+<style>
+  body {
+    font-family: Arial;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+
+    background: url("background.png") no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 0;
+  }
+
+  /* ✅ LOGO (100% bigger) */
+  .logo {
+    position: fixed;
+    top: 30px;
+    left: 30px;
+    width: 560px;
+    z-index: 1000;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.7));
+  }
+
+  .layout {
+    display: flex;
+    align-items: center;
+    gap: 80px;
+    z-index: 1;
+  }
+
+  /* ✅ TEXT (3 lines, more hierarchy) */
+  .left-text {
+    max-width: 500px;
+    font-weight: bold;
+    line-height: 1.1;
+    text-align: center;
+  }
+
+  .line1 {
+    font-size: 40px;
+    opacity: 0.9;
+  }
+
+  .line2 {
+    font-size: 64px;
+  }
+
+  .line3 {
+    font-size: 58px;
+    color: #ff0066;
+  }
+
+  /* ✅ BIGGER WHEEL */
+  .wheel-container {
+    position: relative;
+    width: 900px;
+  }
+
+  canvas {
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  }
+
+  .pointer {
+    width: 0;
+    height: 0;
+    border-left: 35px solid transparent;
+    border-right: 35px solid transparent;
+    border-top: 70px solid white;
+
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999;
+
+    filter: drop-shadow(0 0 3px black)
+            drop-shadow(0 3px 8px rgba(0,0,0,0.8));
+  }
+
+  button {
+    margin-top: 30px;
+    padding: 25px 60px;
+    font-size: 26px;
+    cursor: pointer;
+    background: #ff0066;
+    border: none;
+    color: white;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  button:hover {
+    transform: scale(1.05);
+    background: #ff3385;
+  }
+
+  button:active {
+    transform: scale(0.95);
+    background: #cc0052;
+  }
+</style>
+</head>
+
+<body>
+
+<img src="logo.svg" class="logo" alt="Capgemini logo">
+
+<div class="layout">
+
+  <div class="left-text">
+    <div class="line1">Try our</div>
+    <div class="line2">wheel of fortune</div>
+    <div class="line3">win prizes</div>
+  </div>
+
+  <div>
+    <div class="wheel-container">
+      <div class="pointer"></div>
+      <canvas id="wheel" width="900" height="900"></canvas>
+    </div>
+
+    <div style="text-align:center;">
+      <button onclick="spin()">SPIN</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+
+const options = [
+  "Shopping bag",
+  "Try again",
+  "Running belt",
+  "Shopping bag",
+  "Glass jar",
+  "Almost there – try again",
+  "Shopping bag",
+  "Running belt",
+  "One more try",
+  "Shopping bag",
+  "Glass jar",
+  "Running belt",
+  "Shopping bag"
+];
+
+const baseColors = [
+  ["#5a82a6", "#3e5f7d"],
+  ["#7b5c99", "#5a4373"],
+  ["#5aa6b8", "#3d7480"],
+  ["#b34a7a", "#7f3355"]
+];
+
+let currentAngle = 0;
+
+const canvas = document.getElementById("wheel");
+const ctx = canvas.getContext("2d");
+
+function drawWheel() {
+  const center = 450;
+  const radius = 450;
+  const arc = 2 * Math.PI / options.length;
+
+  options.forEach((opt, i) => {
+    const start = i * arc;
+    const end = start + arc;
+
+    const colorSet = baseColors[i % 4];
+
+    const grad = ctx.createLinearGradient(0, 0, 0, 900);
+    grad.addColorStop(0, colorSet[0]);
+    grad.addColorStop(1, colorSet[1]);
+
+    ctx.beginPath();
+    ctx.moveTo(center, center);
+    ctx.arc(center, center, radius, start, end);
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    ctx.strokeStyle = "rgba(255,255,255,0.5)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.save();
+    ctx.translate(center, center);
+    ctx.rotate(start + arc / 2);
+
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#f0f0f0";
+    ctx.font = "bold 26px Arial";
+    ctx.fillText(opt, radius - 180, 0);
+
+    ctx.restore();
+  });
+}
+
+function spin() {
+  const spin = Math.random() * 360 + 720;
+  currentAngle += spin;
+
+  canvas.style.transition = "transform 4s cubic-bezier(0.33, 1, 0.68, 1)";
+  canvas.style.transform = `rotate(${currentAngle}deg)`;
+}
+
+canvas.onclick = spin;
+
+drawWheel();
+</script>
+
+</body>
+</html>
+``
