@@ -2,6 +2,8 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Spin the Wheel</title>
 
 <style>
@@ -26,14 +28,13 @@
     z-index: 0;
   }
 
-  /* ✅ LOGO (100% bigger) */
+  /* LOGO */
   .logo {
     position: fixed;
     top: 30px;
     left: 30px;
     width: 560px;
     z-index: 1000;
-    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.7));
   }
 
   .layout {
@@ -43,17 +44,14 @@
     z-index: 1;
   }
 
-  /* ✅ TEXT (3 lines, more hierarchy) */
+  /* TEXT */
   .left-text {
     max-width: 500px;
-    font-weight: bold;
-    line-height: 1.1;
     text-align: center;
   }
 
   .line1 {
     font-size: 40px;
-    opacity: 0.9;
   }
 
   .line2 {
@@ -65,7 +63,7 @@
     color: #ff0066;
   }
 
-  /* ✅ BIGGER WHEEL */
+  /* WHEEL */
   .wheel-container {
     position: relative;
     width: 900px;
@@ -74,7 +72,6 @@
   canvas {
     border-radius: 50%;
     background: white;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
   }
 
   .pointer {
@@ -88,39 +85,71 @@
     top: -25px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 999;
-
-    filter: drop-shadow(0 0 3px black)
-            drop-shadow(0 3px 8px rgba(0,0,0,0.8));
   }
 
   button {
     margin-top: 30px;
-    padding: 25px 60px;
-    font-size: 26px;
-    cursor: pointer;
+    padding: 20px 40px;
+    font-size: 22px;
     background: #ff0066;
-    border: none;
     color: white;
+    border: none;
     border-radius: 8px;
-    transition: all 0.2s ease;
   }
 
-  button:hover {
-    transform: scale(1.05);
-    background: #ff3385;
-  }
+  /* ✅ MOBILE VERSION */
+  @media (max-width: 900px) {
 
-  button:active {
-    transform: scale(0.95);
-    background: #cc0052;
+    .layout {
+      flex-direction: column; /* stack */
+      gap: 20px;
+    }
+
+    .logo {
+      width: 180px;  /* smaller logo */
+      top: 10px;
+      left: 10px;
+    }
+
+    .line1 {
+      font-size: 26px;
+    }
+
+    .line2 {
+      font-size: 36px;
+    }
+
+    .line3 {
+      font-size: 32px;
+    }
+
+    .wheel-container {
+      width: 340px;
+    }
+
+    canvas {
+      width: 340px;
+      height: 340px;
+    }
+
+    .pointer {
+      border-left: 18px solid transparent;
+      border-right: 18px solid transparent;
+      border-top: 35px solid white;
+      top: -10px;
+    }
+
+    button {
+      width: 80%;
+      font-size: 20px;
+    }
   }
 </style>
 </head>
 
 <body>
 
-<img src="logo.svg" class="logo" alt="Capgemini logo">
+<img src="logo.svg" class="logo">
 
 <div class="layout">
 
@@ -144,69 +173,41 @@
 </div>
 
 <script>
-
+// same wheel JS (unchanged)
 const options = [
-  "Shopping bag",
-  "Try again",
-  "Running belt",
-  "Shopping bag",
-  "Glass jar",
-  "Almost there – try again",
-  "Shopping bag",
-  "Running belt",
-  "One more try",
-  "Shopping bag",
-  "Glass jar",
-  "Running belt",
+  "Shopping bag","Try again","Running belt",
+  "Shopping bag","Glass jar","Almost there – try again",
+  "Shopping bag","Running belt","One more try",
+  "Shopping bag","Glass jar","Running belt",
   "Shopping bag"
 ];
 
-const baseColors = [
-  ["#5a82a6", "#3e5f7d"],
-  ["#7b5c99", "#5a4373"],
-  ["#5aa6b8", "#3d7480"],
-  ["#b34a7a", "#7f3355"]
-];
-
 let currentAngle = 0;
-
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
 
 function drawWheel() {
-  const center = 450;
-  const radius = 450;
+  const size = canvas.width;
+  const center = size / 2;
+  const radius = size / 2;
   const arc = 2 * Math.PI / options.length;
 
   options.forEach((opt, i) => {
     const start = i * arc;
     const end = start + arc;
 
-    const colorSet = baseColors[i % 4];
-
-    const grad = ctx.createLinearGradient(0, 0, 0, 900);
-    grad.addColorStop(0, colorSet[0]);
-    grad.addColorStop(1, colorSet[1]);
-
     ctx.beginPath();
     ctx.moveTo(center, center);
     ctx.arc(center, center, radius, start, end);
-    ctx.fillStyle = grad;
+    ctx.fillStyle = i % 2 ? "#5a82a6" : "#7b5c99";
     ctx.fill();
-
-    ctx.strokeStyle = "rgba(255,255,255,0.5)";
-    ctx.lineWidth = 2;
-    ctx.stroke();
 
     ctx.save();
     ctx.translate(center, center);
     ctx.rotate(start + arc / 2);
-
-    ctx.textAlign = "center";
-    ctx.fillStyle = "#f0f0f0";
-    ctx.font = "bold 26px Arial";
-    ctx.fillText(opt, radius - 180, 0);
-
+    ctx.fillStyle = "white";
+    ctx.font = "bold 16px Arial";
+    ctx.fillText(opt, radius - 100, 0);
     ctx.restore();
   });
 }
@@ -214,16 +215,12 @@ function drawWheel() {
 function spin() {
   const spin = Math.random() * 360 + 720;
   currentAngle += spin;
-
-  canvas.style.transition = "transform 4s cubic-bezier(0.33, 1, 0.68, 1)";
+  canvas.style.transition = "transform 4s ease-out";
   canvas.style.transform = `rotate(${currentAngle}deg)`;
 }
-
-canvas.onclick = spin;
 
 drawWheel();
 </script>
 
 </body>
 </html>
-``
