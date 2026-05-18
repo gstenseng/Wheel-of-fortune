@@ -207,12 +207,11 @@ function resizeAndDraw() {
 
     ctx.fillStyle = "white";
 
-    /* ✅ SMALLER TEXT */
-    ctx.font = `bold ${size * 0.035}px Arial`;
+    /* ✅ UPDATED TEXT SIZE + POSITION */
+    ctx.font = `bold ${size * 0.032}px Arial`;
     ctx.textAlign = "center";
 
-    /* ✅ POSITION ADJUSTED */
-    ctx.fillText(opt, radius - (size * 0.32), 0);
+    ctx.fillText(opt, radius - (size * 0.18), 0);
 
     ctx.restore();
   });
@@ -220,7 +219,7 @@ function resizeAndDraw() {
 
 window.addEventListener("resize", resizeAndDraw);
 
-/* ✅ FIXED SPIN */
+/* SPIN */
 function spin() {
 
   if (isSpinning) return;
@@ -230,7 +229,6 @@ function spin() {
   canvas.style.transition = "none";
   canvas.style.transform = `rotate(${currentAngle}deg)`;
 
-  // force reflow
   canvas.offsetHeight;
 
   const spin = Math.random() * 360 + 720;
