@@ -206,10 +206,13 @@ function resizeAndDraw() {
     ctx.rotate(start + arc / 2);
 
     ctx.fillStyle = "white";
-    ctx.font = `bold ${size * 0.045}px Arial`;
+
+    /* ✅ SMALLER TEXT */
+    ctx.font = `bold ${size * 0.035}px Arial`;
     ctx.textAlign = "center";
 
-    ctx.fillText(opt, radius - (size * 0.28), 0);
+    /* ✅ POSITION ADJUSTED */
+    ctx.fillText(opt, radius - (size * 0.32), 0);
 
     ctx.restore();
   });
@@ -217,28 +220,25 @@ function resizeAndDraw() {
 
 window.addEventListener("resize", resizeAndDraw);
 
-/* ✅ FIXED SPIN FUNCTION */
+/* ✅ FIXED SPIN */
 function spin() {
 
   if (isSpinning) return;
 
   isSpinning = true;
 
-  // reset animation
   canvas.style.transition = "none";
   canvas.style.transform = `rotate(${currentAngle}deg)`;
 
   // force reflow
   canvas.offsetHeight;
 
-  // new spin
   const spin = Math.random() * 360 + 720;
   currentAngle += spin;
 
   canvas.style.transition = "transform 4s cubic-bezier(0.33, 1, 0.68, 1)";
   canvas.style.transform = `rotate(${currentAngle}deg)`;
 
-  // unlock after animation
   setTimeout(() => {
     isSpinning = false;
   }, 4000);
