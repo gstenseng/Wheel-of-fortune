@@ -19,13 +19,13 @@ body {
   color: white;
 }
 
-/* ✅ FIX: overlay no longer blocks clicks */
+/* overlay */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.5);
-  pointer-events: none; /* IMPORTANT */
+  pointer-events: none;
 }
 
 /* LOGO */
@@ -42,9 +42,11 @@ body::before {
   display: flex;
   align-items: center;
   gap: 60px;
+  position: relative;
+  z-index: 2;
 }
 
-/* ✅ FIX: sharper text */
+/* TEXT */
 .left-text {
   text-align: center;
   text-rendering: geometricPrecision;
@@ -68,7 +70,6 @@ body::before {
   border-left: 35px solid transparent;
   border-right: 35px solid transparent;
   border-top: 70px solid white;
-
   position: absolute;
   top: -25px;
   left: 50%;
@@ -86,12 +87,32 @@ button {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-
-  z-index: 5; /* ensure clickable */
+  position: relative;
+  z-index: 3;
 }
 
-button:hover {
-  background: #ff3385;
+/* ✅ QR BLOCK */
+.qr-box {
+  position: fixed;
+  right: 30px;
+  bottom: 30px;
+  text-align: center;
+  z-index: 1000;
+}
+
+.qr-text {
+  margin-bottom: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+}
+
+.qr-box img {
+  width: 160px;
+  border-radius: 10px;
+  background: white;
+  padding: 6px;
 }
 
 /* MOBILE */
@@ -125,6 +146,19 @@ button:hover {
   button {
     width: 70%;
   }
+
+  .qr-box {
+    right: 10px;
+    bottom: 10px;
+  }
+
+  .qr-box img {
+    width: 120px;
+  }
+
+  .qr-text {
+    font-size: 16px;
+  }
 }
 </style>
 </head>
@@ -154,9 +188,14 @@ button:hover {
 
 </div>
 
+<!-- ✅ QR SECTION -->
+<div class="qr-box">
+  <div class="qr-text">Win a AI workshop</div>
+  <img src="QRCode.jpeg" alt="QR code">
+</div>
+
 <script>
 
-/* PRIZES */
 const options = [
   "Tote bag",
   "Running belt",
@@ -172,15 +211,12 @@ const options = [
   "Shoe shine"
 ];
 
-const colors = ["#5a82a6","#7b5c99","#5aa6b8","#b34a7a"];
-
 let currentAngle = 0;
 let isSpinning = false;
 
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
 
-/* DRAW */
 function resizeAndDraw() {
 
   const size = canvas.parentElement.offsetWidth;
@@ -201,7 +237,7 @@ function resizeAndDraw() {
     ctx.beginPath();
     ctx.moveTo(center, center);
     ctx.arc(center, center, radius, start, start + arc);
-    ctx.fillStyle = colors[i % 4];
+    ctx.fillStyle = ["#5a82a6","#7b5c99","#5aa6b8","#b34a7a"][i % 4];
     ctx.fill();
 
     ctx.strokeStyle = "rgba(255,255,255,0.4)";
@@ -221,7 +257,6 @@ function resizeAndDraw() {
   });
 }
 
-/* SPIN */
 function spin() {
 
   if (isSpinning) return;
@@ -243,7 +278,6 @@ function spin() {
   }, 4000);
 }
 
-/* INIT */
 resizeAndDraw();
 window.addEventListener("resize", resizeAndDraw);
 
