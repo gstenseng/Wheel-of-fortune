@@ -1,5 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Spin the Wheel</title>
+
+<style>
+body {
+  font-family: Arial;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: url("background.png") no-repeat center center fixed;
+  background-size: cover;
+  color: white;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+}
+
+/* LOGO */
+.logo {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 420px;
+  z-index: 1000;
+}
+
+/* LAYOUT */
+.layout {
+  display: flex;
+  align-items: center;
+  gap: 60px;
+}
+
+/* TEXT */
+.left-text {
+  text-align: center;
+}
+
+.line1 { font-size: 40px; }
+.line2 { font-size: 64px; }
+.line3 { font-size: 58px; color: #ff0066; }
+
+/* WHEEL */
+.wheel-container {
+  position: relative;
+  width: 900px;
+}
+
+/* POINTER */
+.pointer {
+  width: 0;
+  height: 0;
+  border-left: 35px solid transparent;
+  border-right: 35px solid transparent;
+  border-top: 70px solid white;
+
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+/* BUTTON */
+button {
+  margin-top: 30px;
+  padding: 20px 40px;
+  font-size: 24px;
+  background: #ff0066;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* MOBILE */
+@media (max-width: 900px) {
+
+  .layout {
+    flex-direction: column;
+    gap: 20px;
+    padding-top: 80px;
+  }
+
+  .logo {
+    width: 180px;
+  }
+
+  .line1 { font-size: 24px; }
+  .line2 { font-size: 36px; }
+  .line3 { font-size: 32px; }
+
+  .wheel-container {
+    width: 340px;
+  }
+
+  .pointer {
+    border-left: 18px solid transparent;
+    border-right: 18px solid transparent;
+    border-top: 35px solid white;
+    top: -10px;
+  }
+
+  button {
+    width: 70%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<img src="logo.svg" class="logo">
+
+<div class="layout">
+
+  <div class="left-text">
+    <div class="line1">Try our</div>
+    <div class="line2">wheel of fortune</div>
+    <div class="line3">win prizes</div>
+  </div>
+
+  <div>
+    <div class="wheel-container">
+      <div class="pointer"></div>
+      <canvas id="wheel"></canvas>
+    </div>
+
+    <div style="text-align:center;">
+      <button onclick="spin()">SPIN</button>
+    </div>
+  </div>
+
+</div>
+
 <script>
 
+/* ✅ EVENLY DISTRIBUTED PRIZES */
 const options = [
   "Tote bag",
   "Running belt",
@@ -28,6 +175,7 @@ let isSpinning = false;
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
 
+/* DRAW */
 function resizeAndDraw() {
 
   const size = canvas.parentElement.offsetWidth;
@@ -42,8 +190,8 @@ function resizeAndDraw() {
   ctx.clearRect(0,0,size,size);
 
   options.forEach((opt, i) => {
+
     const start = i * arc;
-    const end = start + arc;
 
     const colorSet = baseColors[i % 4];
 
@@ -53,7 +201,7 @@ function resizeAndDraw() {
 
     ctx.beginPath();
     ctx.moveTo(center, center);
-    ctx.arc(center, center, radius, start, end);
+    ctx.arc(center, center, radius, start, start + arc);
     ctx.fillStyle = grad;
     ctx.fill();
 
@@ -65,9 +213,12 @@ function resizeAndDraw() {
     ctx.rotate(start + arc / 2);
 
     ctx.fillStyle = "white";
+    
+    /* ✅ TEXT TUNED */
     ctx.font = `bold ${size * 0.032}px Arial`;
     ctx.textAlign = "center";
 
+    /* ✅ PUSHED OUT WITH MARGIN */
     ctx.fillText(opt, radius - (size * 0.18), 0);
 
     ctx.restore();
@@ -76,6 +227,7 @@ function resizeAndDraw() {
 
 window.addEventListener("resize", resizeAndDraw);
 
+/* ✅ SPIN FIXED */
 function spin() {
 
   if (isSpinning) return;
@@ -84,7 +236,6 @@ function spin() {
 
   canvas.style.transition = "none";
   canvas.style.transform = `rotate(${currentAngle}deg)`;
-
   canvas.offsetHeight;
 
   const spin = Math.random() * 360 + 720;
@@ -98,7 +249,10 @@ function spin() {
   }, 4000);
 }
 
+/* INIT */
 resizeAndDraw();
 
 </script>
-``
+
+</body>
+</html>
