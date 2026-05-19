@@ -8,7 +8,7 @@
 
 <style>
 body {
-  font-family: Arial;
+  font-family: Arial, sans-serif;
   margin: 0;
   display: flex;
   justify-content: center;
@@ -19,11 +19,13 @@ body {
   color: white;
 }
 
+/* ✅ FIX: overlay no longer blocks clicks */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.5);
+  pointer-events: none; /* IMPORTANT */
 }
 
 /* LOGO */
@@ -42,9 +44,11 @@ body::before {
   gap: 60px;
 }
 
-/* TEXT */
+/* ✅ FIX: sharper text */
 .left-text {
   text-align: center;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
 }
 
 .line1 { font-size: 40px; }
@@ -82,6 +86,12 @@ button {
   border: none;
   border-radius: 8px;
   cursor: pointer;
+
+  z-index: 5; /* ensure clickable */
+}
+
+button:hover {
+  background: #ff3385;
 }
 
 /* MOBILE */
@@ -146,7 +156,7 @@ button {
 
 <script>
 
-/* ✅ EVENLY DISTRIBUTED PRIZES */
+/* PRIZES */
 const options = [
   "Tote bag",
   "Running belt",
@@ -162,12 +172,7 @@ const options = [
   "Shoe shine"
 ];
 
-const baseColors = [
-  ["#5a82a6", "#3e5f7d"],
-  ["#7b5c99", "#5a4373"],
-  ["#5aa6b8", "#3d7480"],
-  ["#b34a7a", "#7f3355"]
-];
+const colors = ["#5a82a6","#7b5c99","#5aa6b8","#b34a7a"];
 
 let currentAngle = 0;
 let isSpinning = false;
@@ -193,16 +198,10 @@ function resizeAndDraw() {
 
     const start = i * arc;
 
-    const colorSet = baseColors[i % 4];
-
-    const grad = ctx.createLinearGradient(0, 0, 0, size);
-    grad.addColorStop(0, colorSet[0]);
-    grad.addColorStop(1, colorSet[1]);
-
     ctx.beginPath();
     ctx.moveTo(center, center);
     ctx.arc(center, center, radius, start, start + arc);
-    ctx.fillStyle = grad;
+    ctx.fillStyle = colors[i % 4];
     ctx.fill();
 
     ctx.strokeStyle = "rgba(255,255,255,0.4)";
@@ -213,21 +212,16 @@ function resizeAndDraw() {
     ctx.rotate(start + arc / 2);
 
     ctx.fillStyle = "white";
-    
-    /* ✅ TEXT TUNED */
     ctx.font = `bold ${size * 0.032}px Arial`;
     ctx.textAlign = "center";
 
-    /* ✅ PUSHED OUT WITH MARGIN */
     ctx.fillText(opt, radius - (size * 0.18), 0);
 
     ctx.restore();
   });
 }
 
-window.addEventListener("resize", resizeAndDraw);
-
-/* ✅ SPIN FIXED */
+/* SPIN */
 function spin() {
 
   if (isSpinning) return;
@@ -251,6 +245,7 @@ function spin() {
 
 /* INIT */
 resizeAndDraw();
+window.addEventListener("resize", resizeAndDraw);
 
 </script>
 
